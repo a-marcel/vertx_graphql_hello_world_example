@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.execution.batched.BatchedExecutionStrategy;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLType;
@@ -49,10 +50,10 @@ public class TestVerticle extends AbstractVerticle {
 	private void graphQL(RoutingContext context) {
 		String query = "{hello}";
 
-		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery"))
-				.build(new HashSet<>(types.values()));
+		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
 
-		GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+		// GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+		GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
 
 		ExecutionResult executionResult = graphQL.execute(query);
 

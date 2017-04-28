@@ -11,6 +11,7 @@ public class MyGuiceModule extends AbstractModule {
                 types.addBinding("helloWorldQuery")
                      .toProvider(com.example.apigen.helloWorldQueryTypeProvider.class);
                 OptionalBinder.newOptionalBinder(binder(), com.example.apigen.helloWorldQuery.class);
+                OptionalBinder.newOptionalBinder(binder(), com.example.apigen.helloWorldQuery.Resolver.class);
 
     }
 }
