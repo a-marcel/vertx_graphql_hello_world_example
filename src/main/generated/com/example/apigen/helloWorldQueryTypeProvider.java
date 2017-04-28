@@ -23,6 +23,10 @@ public class helloWorldQueryTypeProvider implements Provider<GraphQLObjectType> 
             .field(GraphQLFieldDefinition.newFieldDefinition()
                 .type(Scalars.GraphQLString)
                 .name("hello")
+                .dataFetcher(new MethodDataFetcher(
+                    "hello",
+                    null,
+                    _impl.orElse(null)))
                 .build())
             .build();
     }

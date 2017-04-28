@@ -16,6 +16,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import graphql.execution.batched.BatchedExecutionStrategy;
 
 public class TestVerticle extends AbstractVerticle {
 
@@ -52,7 +53,7 @@ public class TestVerticle extends AbstractVerticle {
 		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery"))
 				.build(new HashSet<>(types.values()));
 
-		GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+		GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
 
 		ExecutionResult executionResult = graphQL.execute(query);
 
