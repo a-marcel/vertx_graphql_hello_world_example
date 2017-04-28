@@ -13,7 +13,7 @@ public class Binder extends AbstractModule {
 
 	}
 
-	class helloWorldQueryImpl implements helloWorldQuery {
+	public class helloWorldQueryImpl implements helloWorldQuery {
 		public String getHello() {
 			return "world";
 		}
