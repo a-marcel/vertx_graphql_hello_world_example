@@ -48,7 +48,7 @@ public class TestVerticle extends AbstractVerticle {
 	}
 
 	private void graphQL(RoutingContext context) {
-		String query = "{hello}";
+		String query = "{id hello}";
 
 		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
 

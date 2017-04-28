@@ -12,19 +12,6 @@ public class Binder extends AbstractModule {
 	protected void configure() {
 		install(new MyGuiceModule());
 
-		bind(helloWorldQuery.Resolver.class).toInstance(new helloWorldQueryResolver());
-
-	}
-
-	public class helloWorldQueryResolver implements helloWorldQuery.Resolver {
-
-		@Override
-		public List<helloWorldQuery> resolve(List<helloWorldQuery> list) {
-			return new ArrayList<helloWorldQuery>() {
-				{
-					add(new helloWorldQuery.Builder().withHello("World").build());
-				}
-			};
-		}
+		bind(helloWorldQuery.Resolver.class).toInstance(new HelloWorldResolver());
 	}
 }
