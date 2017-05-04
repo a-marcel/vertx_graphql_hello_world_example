@@ -23,9 +23,16 @@ public class TestVerticle extends AbstractVerticle {
 	@Inject
 	Map<String, GraphQLType> types;
 
+	GraphQL graphQL;
+
 	@Override
 	public void start(Future<Void> future) throws Exception {
 		super.start();
+
+		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
+
+		graphQL = GraphQL.newGraphQL(schema).build();
+		// GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
 
 		// get HTTP host and port from configuration, or use default value
 		String host = config().getString("http.address", "127.0.0.1");
@@ -49,11 +56,6 @@ public class TestVerticle extends AbstractVerticle {
 
 	private void graphQL(RoutingContext context) {
 		String query = "{page(url:\"xxx\") { ... on Contact {id}}}";
-
-		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
-
-		GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-		// GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
 
 		try {
 			ExecutionResult executionResult = graphQL.execute(query);

@@ -61,6 +61,14 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.vertx/vertx-rx-java -->
+		<dependency>
+			<groupId>io.vertx</groupId>
+			<artifactId>vertx-rx-java</artifactId>
+			<version>3.4.1</version>
+		</dependency>
+
+
 
 
 
