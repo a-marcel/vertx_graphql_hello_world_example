@@ -1,4 +1,18 @@
+interface DefaultPage {
+	id: String
+	url: String
+}
+
+type Contact implements DefaultPage {
+	id: String
+}
+
+type Other1 implements DefaultPage {
+	id: String
+}
+
+union Page = Contact | Other1
+
 type helloWorldQuery {
-	id: String!
-	hello: String
+	page(url: String): [Page]
 }

@@ -48,16 +48,25 @@ public class TestVerticle extends AbstractVerticle {
 	}
 
 	private void graphQL(RoutingContext context) {
-		String query = "{id hello}";
+		String query = "{page(url:\"xxx\") { ... on Contact {id}}}";
 
 		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
 
-		// GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-		GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
+		GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+		// GraphQL graphQL = new GraphQL(schema, new BatchedExecutionStrategy());
 
-		ExecutionResult executionResult = graphQL.execute(query);
+		try {
+			ExecutionResult executionResult = graphQL.execute(query);
 
-		context.response().putHeader("content-type", "application/json").end(executionResult.getData().toString());
+			if (null != executionResult.getErrors()) {
+				context.response().putHeader("content-type", "application/json").end(executionResult.getErrors().toString());
+			} else {
+				context.response().putHeader("content-type", "application/json").end(executionResult.getData().toString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			context.response().putHeader("content-type", "application/json").end("Error");
+		}
 
 	}
 }

@@ -1,5 +1,7 @@
 package com.example.apigen;
 
+import com.example.apigen.Page;
+import java.util.List;
 import com.distelli.graphql.MethodDataFetcher;
 import com.distelli.graphql.ResolverDataFetcher;
 import graphql.Scalars;
@@ -21,12 +23,17 @@ public class helloWorldQueryTypeProvider implements Provider<GraphQLObjectType> 
         return GraphQLObjectType.newObject()
             .name("helloWorldQuery")
             .field(GraphQLFieldDefinition.newFieldDefinition()
-                .type(Scalars.GraphQLString)
-                .name("id")
-                .build())
-            .field(GraphQLFieldDefinition.newFieldDefinition()
-                .type(Scalars.GraphQLString)
-                .name("hello")
+                .type(new GraphQLList(new GraphQLTypeReference("Page")))
+                .name("page")
+                .argument(Arrays.asList(
+                    GraphQLArgument.newArgument()
+                    .name("url")
+                    .type(Scalars.GraphQLString)
+                    .build()))
+                .dataFetcher(new MethodDataFetcher(
+                    "page",
+                    helloWorldQuery.PageArgs.class,
+                    _impl.orElse(null)))
                 .build())
             .build();
     }

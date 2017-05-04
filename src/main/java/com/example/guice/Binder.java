@@ -12,6 +12,7 @@ public class Binder extends AbstractModule {
 	protected void configure() {
 		install(new MyGuiceModule());
 
-		bind(helloWorldQuery.Resolver.class).toInstance(new HelloWorldResolver());
+//		bind(helloWorldQuery.Resolver.class).toInstance(new HelloWorldResolver());
+		bind(helloWorldQuery.class).toInstance(new HelloWorldImpl());
 	}
 }
