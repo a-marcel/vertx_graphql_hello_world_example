@@ -47,8 +47,16 @@ public class GraphQLTests {
 				});
 				req.handler(resp -> {
 					context.assertEquals(200, resp.statusCode());
-					
-					async.countDown();
+
+					resp.bodyHandler(body -> {
+						System.out.println(body.toString());
+						
+						context.assertNotEquals("[]", body.toString());
+						client.close();
+
+						async.countDown();
+					});
+
 				});
 				req.end();
 
@@ -57,7 +65,7 @@ public class GraphQLTests {
 			}
 		});
 
-//		async.awaitSuccess();
+		// async.awaitSuccess();
 
 	}
 }
