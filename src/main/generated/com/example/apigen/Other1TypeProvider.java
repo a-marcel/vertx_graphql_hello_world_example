@@ -16,10 +16,15 @@ public class Other1TypeProvider implements Provider<GraphQLObjectType> {
     private Optional<Other1> _impl;
     @Inject
     protected Other1TypeProvider() {}
+    
+    @Inject
+  	protected DefaultPageInterfaceProvider defaultPageInterfaceProvider;
+    
     @Override
     public GraphQLObjectType get() {
         return GraphQLObjectType.newObject()
             .name("Other1")
+            .withInterface(defaultPageInterfaceProvider.get())
             .field(GraphQLFieldDefinition.newFieldDefinition()
                 .type(Scalars.GraphQLString)
                 .name("id")

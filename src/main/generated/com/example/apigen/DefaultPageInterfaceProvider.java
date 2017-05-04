@@ -3,11 +3,13 @@ package com.example.apigen;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import graphql.Scalars;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLUnionType;
 import graphql.schema.TypeResolver;
 
-public class PageTypeProvider implements Provider<GraphQLUnionType> {
+public class DefaultPageInterfaceProvider implements Provider<GraphQLInterfaceType> {
 
 	@Inject
 	protected ContactTypeProvider contactProvider;
@@ -16,19 +18,17 @@ public class PageTypeProvider implements Provider<GraphQLUnionType> {
 	protected Other1TypeProvider other1Provider;
 
 	@Override
-	public GraphQLUnionType get() {
+	public GraphQLInterfaceType get() {
+		return GraphQLInterfaceType.newInterface()
 
-		return GraphQLUnionType.newUnionType().name("Page")
+				.name("DefaultPage")
 
-				.possibleType(contactProvider.get())
-
-				.possibleType(other1Provider.get())
+				.field(GraphQLFieldDefinition.newFieldDefinition().name("name").type(Scalars.GraphQLString))
 
 				.typeResolver(new TypeResolver() {
 
 					@Override
 					public GraphQLObjectType getType(Object object) {
-
 						if (Contact.class.isInstance(object)) {
 							return contactProvider.get();
 						}
@@ -36,13 +36,9 @@ public class PageTypeProvider implements Provider<GraphQLUnionType> {
 						if (Other1.class.isInstance(object)) {
 							return other1Provider.get();
 						}
-
 						return null;
 					}
-
-				})
-
-				.build();
+				}).build();
 	}
 
 }

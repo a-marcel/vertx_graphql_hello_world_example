@@ -16,10 +16,15 @@ public class ContactTypeProvider implements Provider<GraphQLObjectType> {
     private Optional<Contact> _impl;
     @Inject
     protected ContactTypeProvider() {}
+    
+    @Inject
+	protected DefaultPageInterfaceProvider defaultPageInterfaceProvider;
+    
     @Override
     public GraphQLObjectType get() {
         return GraphQLObjectType.newObject()
             .name("Contact")
+            .withInterface(defaultPageInterfaceProvider.get())
             .field(GraphQLFieldDefinition.newFieldDefinition()
                 .type(Scalars.GraphQLString)
                 .name("id")
