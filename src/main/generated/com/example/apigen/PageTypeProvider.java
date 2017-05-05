@@ -25,13 +25,12 @@ public class PageTypeProvider implements Provider<GraphQLUnionType> {
 
 				.possibleType(contactProvider.get())
 
-//				.possibleType(GraphQLObjectType.reference("Other1"))
+				.possibleType(other1Provider.get())
 
 				.typeResolver(new TypeResolver() {
 
 					@Override
 					public GraphQLObjectType getType(Object object) {
-//						return GraphQLObjectType.reference("Contact");
 						
 						if (Contact.class.isInstance(object)) {
 							return contactProvider.get();

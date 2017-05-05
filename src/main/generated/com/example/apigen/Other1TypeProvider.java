@@ -17,21 +17,27 @@ public class Other1TypeProvider implements Provider<GraphQLObjectType> {
     @Inject
     protected Other1TypeProvider() {}
     
+    static GraphQLObjectType type;
+    
     @Override
     public GraphQLObjectType get() {
-        return GraphQLObjectType.newObject()
-            .name("Other1")
-            
-            .withInterface(GraphQLInterfaceType.reference("DefaultPage"))
-            
-            .field(GraphQLFieldDefinition.newFieldDefinition()
-                .type(Scalars.GraphQLString)
-                .name("id")
-                .dataFetcher(new MethodDataFetcher(
-                    "id",
-                    null,
-                    _impl.orElse(null)))
-                .build())
-            .build();
+    	
+    	if (null == Other1TypeProvider.type) {
+	        type= GraphQLObjectType.newObject()
+	            .name("Other1")
+	            
+	            .withInterface(GraphQLInterfaceType.reference("DefaultPage"))
+	            
+	            .field(GraphQLFieldDefinition.newFieldDefinition()
+	                .type(Scalars.GraphQLString)
+	                .name("id")
+	                .dataFetcher(new MethodDataFetcher(
+	                    "id",
+	                    null,
+	                    _impl.orElse(null)))
+	                .build())
+	            .build();
+    	}
+    	return type;
     }
 }

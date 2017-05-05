@@ -84,7 +84,7 @@ public class RawGraphQLWithApiGenObjectsTest {
 	public void testUnion() {
 
 		// String query = "{page(url:\"xxx\") { ... on Contact {id}}}";
-		String query = "{page { ... on Contact {id}}}";
+		String query = "{page { ... on Contact {id} ... on Other1 {id}}}";
 
 		ExecutionResult executionResult = graphQL.execute(query);
 
