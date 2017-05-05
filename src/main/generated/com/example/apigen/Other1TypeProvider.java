@@ -17,14 +17,13 @@ public class Other1TypeProvider implements Provider<GraphQLObjectType> {
     @Inject
     protected Other1TypeProvider() {}
     
-    @Inject
-  	protected DefaultPageInterfaceProvider defaultPageInterfaceProvider;
-    
     @Override
     public GraphQLObjectType get() {
         return GraphQLObjectType.newObject()
             .name("Other1")
-            .withInterface(defaultPageInterfaceProvider.get())
+            
+            .withInterface(GraphQLInterfaceType.reference("DefaultPage"))
+            
             .field(GraphQLFieldDefinition.newFieldDefinition()
                 .type(Scalars.GraphQLString)
                 .name("id")

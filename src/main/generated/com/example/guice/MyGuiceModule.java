@@ -1,5 +1,6 @@
 package com.example.guice;
 import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.multibindings.OptionalBinder;
 import graphql.schema.GraphQLType;
@@ -9,7 +10,8 @@ public class MyGuiceModule extends AbstractModule {
         MapBinder<String, GraphQLType> types =
             MapBinder.newMapBinder(binder(), String.class, GraphQLType.class);
                 types.addBinding("Contact")
-                     .toProvider(com.example.apigen.ContactTypeProvider.class);
+                     .toProvider(com.example.apigen.ContactTypeProvider.class).in(Singleton.class);
+                
                 OptionalBinder.newOptionalBinder(binder(), com.example.apigen.Contact.class);
                 OptionalBinder.newOptionalBinder(binder(), com.example.apigen.Contact.Resolver.class);
                 types.addBinding("Other1")

@@ -17,22 +17,29 @@ public class ContactTypeProvider implements Provider<GraphQLObjectType> {
     @Inject
     protected ContactTypeProvider() {}
     
-    @Inject
-	protected DefaultPageInterfaceProvider defaultPageInterfaceProvider;
+    static GraphQLObjectType type;
     
     @Override
     public GraphQLObjectType get() {
-        return GraphQLObjectType.newObject()
-            .name("Contact")
-            .withInterface(defaultPageInterfaceProvider.get())
-            .field(GraphQLFieldDefinition.newFieldDefinition()
-                .type(Scalars.GraphQLString)
-                .name("id")
-                .dataFetcher(new MethodDataFetcher(
-                    "id",
-                    null,
-                    _impl.orElse(null)))
-                .build())
-            .build();
+    	
+    	if ( null == ContactTypeProvider.type) {
+	    	System.out.println("create new instance of Contact");
+	    	ContactTypeProvider.type = GraphQLObjectType.newObject()
+	            .name("Contact")
+	            
+	            .withInterface(GraphQLInterfaceType.reference("DefaultPage"))
+	            
+	            .field(GraphQLFieldDefinition.newFieldDefinition()
+	                .type(Scalars.GraphQLString)
+	                .name("id")
+	                .dataFetcher(new MethodDataFetcher(
+	                    "id",
+	                    null,
+	                    _impl.orElse(null)))
+	                .build())
+	            .build();
+    	}
+    	
+    	return type;
     }
 }

@@ -9,14 +9,6 @@ import com.example.apigen.helloWorldQuery.PageArgs;
 
 public class HelloWorldImpl implements helloWorldQuery {
 
-	public String getId() {
-		return "1";
-	}
-
-	public String getHello() {
-		return "world";
-	}
-
 	public List<Object> page(PageArgs args) {
 		List<Object> res = new ArrayList<Object>();
 

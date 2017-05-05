@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLTypeReference;
 import graphql.schema.GraphQLUnionType;
 import graphql.schema.TypeResolver;
 
@@ -17,18 +18,21 @@ public class PageTypeProvider implements Provider<GraphQLUnionType> {
 
 	@Override
 	public GraphQLUnionType get() {
+		
+		
 
 		return GraphQLUnionType.newUnionType().name("Page")
 
 				.possibleType(contactProvider.get())
 
-				.possibleType(other1Provider.get())
+//				.possibleType(GraphQLObjectType.reference("Other1"))
 
 				.typeResolver(new TypeResolver() {
 
 					@Override
 					public GraphQLObjectType getType(Object object) {
-
+//						return GraphQLObjectType.reference("Contact");
+						
 						if (Contact.class.isInstance(object)) {
 							return contactProvider.get();
 						}

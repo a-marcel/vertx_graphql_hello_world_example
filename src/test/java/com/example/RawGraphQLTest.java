@@ -2,22 +2,20 @@ package com.example;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import com.distelli.graphql.MethodDataFetcher;
-import com.example.apigen.Contact;
-import com.example.apigen.Other1;
-import com.example.apigen.helloWorldQuery;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.Scalars;
-import graphql.schema.GraphQLArgument;
+import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLList;
@@ -30,9 +28,36 @@ import graphql.schema.TypeResolver;
 
 public class RawGraphQLTest {
 
-	@Test
-	public void testUnion() {
+	GraphQL graphQL;
 
+	public static class Contact {
+		String id;
+		String name;
+
+		public Contact(String id) {
+			this.id = id;
+		}
+
+		public String getId() {
+			return id;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public Contact withName(String name) {
+			this.setName(name);
+			return this;
+		}
+	}
+
+	@Before
+	public void initGraphQLSchema() {
 		GraphQLInterfaceType defaultPageInterface = GraphQLInterfaceType.newInterface()
 
 				.name("DefaultPage")
@@ -47,9 +72,6 @@ public class RawGraphQLTest {
 							// return contactProvider.get();
 						}
 
-						if (Other1.class.isInstance(object)) {
-							// return other1Provider.get();
-						}
 						return null;
 					}
 				}).build();
@@ -58,15 +80,17 @@ public class RawGraphQLTest {
 
 				.name("Contact")
 
-				.withInterface(defaultPageInterface)
+				.withInterface(GraphQLInterfaceType.reference("DefaultPage"))
 
 				.field(GraphQLFieldDefinition.newFieldDefinition().type(Scalars.GraphQLString).name("id"))
+
+				.field(GraphQLFieldDefinition.newFieldDefinition().type(Scalars.GraphQLString).name("name"))
 
 				.build();
 
 		GraphQLUnionType pageUnionType = GraphQLUnionType.newUnionType().name("Page")
 
-				.possibleType(contactType)
+				.possibleType(GraphQLObjectType.reference("Contact"))
 
 				.typeResolver(new TypeResolver() {
 
@@ -77,9 +101,6 @@ public class RawGraphQLTest {
 							return contactType;
 						}
 
-						if (Other1.class.isInstance(object)) {
-							// return other1Provider.get();
-						}
 
 						return null;
 					}
@@ -92,29 +113,58 @@ public class RawGraphQLTest {
 
 				.name("helloWorldQuery")
 
-				.field(GraphQLFieldDefinition.newFieldDefinition().type(new GraphQLList(new GraphQLTypeReference("Page")))
+				.field(GraphQLFieldDefinition.newFieldDefinition().type(new GraphQLList(pageUnionType))
 
 						.name("page")
 
-						.argument(Arrays.asList(GraphQLArgument.newArgument().name("url").type(Scalars.GraphQLString).build())))
+						// .argument(Arrays
+						// .asList(GraphQLArgument.newArgument().name("url").type(Scalars.GraphQLString).build()))
+
+						.dataFetcher(this.pageDataFetcher()))
+
 				.build();
 
 		Map<String, GraphQLType> types = new HashMap<String, GraphQLType>();
-		types.put("helloWorldQuery", queryType);
+		types.put("helloWorldQuery", GraphQLObjectType.reference("helloWorldQuery"));
 		types.put("Contact", contactType);
 		types.put("Page", pageUnionType);
 
-		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery")).build(new HashSet<>(types.values()));
+		GraphQLSchema schema = GraphQLSchema.newSchema().query((GraphQLObjectType) types.get("helloWorldQuery"))
+				.build(new HashSet<>(types.values()));
 
-		GraphQL graphQL = GraphQL.newGraphQL(schema).build();
+		graphQL = GraphQL.newGraphQL(schema).build();
 
 		assertNotNull(graphQL);
+	}
 
-		String query = "{page(url:\"xxx\") { ... on Contact {id}}}";
+	DataFetcher pageDataFetcher() {
+
+		DataFetcher pageFetch = new DataFetcher() {
+			@Override
+			public Object get(DataFetchingEnvironment env) {
+				ArrayList<Object> data = new ArrayList<Object>();
+
+				data.add(new Contact("123").withName("test"));
+
+				return data;
+			}
+		};
+		return pageFetch;
+	}
+
+	@Test
+	public void testUnion() {
+
+		// String query = "{page(url:\"xxx\") { ... on Contact {id}}}";
+		String query = "{page { ... on Contact {id}}}";
 
 		ExecutionResult executionResult = graphQL.execute(query);
 
 		assertNotNull(executionResult);
+
+		if (null != executionResult.getErrors()) {
+			System.out.println(executionResult.getErrors());
+		}
 
 		assertNotNull(executionResult.getData());
 		System.out.println(executionResult.getData().toString());
